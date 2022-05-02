@@ -1,30 +1,30 @@
-export const BASE_URL = 'https://api.nomoreparties.co';
+ 
+class Auto {
+  constructor({server,handleResponse}) {
+    this._server = server;
+    this._handleResponse = handleResponse;}
 
-export const register = (email, password) => {
-  return fetch(`${BASE_URL}/singup`, {
+register  ({email, password})  {
+  return fetch(`${this._server}/signup`, {
     method: 'POST',
     headers: {
       
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({email, password})
+    body: JSON.stringify({"email": email, "password": password
+    })
   })
-  .then((response) => {
-    return response.json();
-  })
-  .then((res) => {
-    return res;
-  })
-  .catch((err) => console.log(err));
+    
+  .then(this._handleResponse);
 };
-export const authorize = (email, password) => {
-  return fetch(`${BASE_URL}singin`, {
+authorize  ({email, password}) {
+  return fetch(`${this._server}/signin`, {
     method: 'POST',
     headers: {
        
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({email, password})
+    body: JSON.stringify({"email": email, "password": password})
   })
   .then((response => response.json()))
   .then((data) => {
@@ -34,17 +34,21 @@ export const authorize = (email, password) => {
       return data;
     } 
   })
-  .catch(err => console.log(err))
+  .then(this._handleResponse)
 };
-export const checkToken = (token) => {
-  return fetch(`${BASE_URL}/users/me`, {
+checkToken  (token) {
+  return fetch(`${this._server}/users/me`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     }
   })
-  .then(res => res.json())
-  .then((res) => { return res;})
-  .catch(err => console.log(err))
+   
+  .then(this._handleResponse)
 }
+}
+export default new Auto({server: "https://auth.nomoreparties.co", handleResponse: (res) => {
+  if (!res.ok) {return Promise.reject(`Ошибка: ${res.status}`);}
+  return res.json();
+}});

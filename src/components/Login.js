@@ -4,11 +4,11 @@ import { withRouter} from "react-router-dom"
 function Login ({onLogin}) {
     const email = React.useRef();
     const password = React.useRef();
-function handleSubmit(e){
-    e.preventDefault();
+function handleSubmit(){
+   
     onLogin ({
         email: email.current.value,
-        passord:password.current.value
+        password:password.current.value
     })
 }
     

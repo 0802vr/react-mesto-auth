@@ -8,7 +8,7 @@ function handleSubmit(e){
     e.preventDefault();
     onRegister ({
         email: email.current.value,
-        passord:password.current.value
+        password:password.current.value
     })
 }
     

@@ -14,12 +14,11 @@ import  SuccessAuto from "../image/Success.png"
 import FailAuto from "../image/Fail.png"    
 import { Route, Redirect, Switch, useHistory, BrowserRouter} from "react-router-dom";
 import api from "../utils/Api";
-import Auto from "../utils/Auto.js";
+import * as auto from "../utils/Auto.js";
 import { CurrentUserContext } from "../context/CurrentUserContext";
 
 
 function App() {
-  const history = useHistory();
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [isEditAvatarisPopupOpen, setEditAvatarisPopupOpen] =
     React.useState(false);
@@ -36,28 +35,11 @@ function App() {
   const toolTipFail = {image: FailAuto, text:"Что-то пошло не так! Попробуйте ещё раз."};
 const toolTipSuccess = {image: SuccessAuto, text:"Вы успешно зарегистрировались!"};
 const [toolTip, setToolTip] = React.useState(toolTipFail);
-const [email, setEmail] = React.useState("");
+ 
 const [isSetTooltipOpen, setTooltipOpen] = React.useState(false);
 
-function handleToken ()  {
-if (localStorage.getItem('jwt')){
-  const jwt = localStorage.getItem('jwt')
-  console.log(jwt)
-  Auto.checkToken(jwt)
-  .then((token) => {
-    if(token.data._id && token.data.email){
-      setEmail(token.data.email);
-      setLoggedIn(true);
-    }
-  })
-  .catch((error) => {
-     
-    console.log(error);
-    }
-  );
-}
-}
-handleToken()
+
+
  
  
  
@@ -175,42 +157,20 @@ handleToken()
       });
   }
   function handleRegister ({email, password}){
-    Auto.register({email:email, password:password})
+    auto.register({email:email, password:password})
     .then (
      () => {
        setToolTip(toolTipSuccess);
-       setTooltipOpen(true);
+       isSetTooltipOpen(true);
      }
    )
    .catch(() => {
      setToolTip(toolTipFail);
-     setTooltipOpen(true);
-    
+     isSetTooltipOpen(true);
    })
  }
+  
 
- function handleLogin ({email, password}){
-  Auto.authorize({email:email, password:password})
-  .then (
-    (res) => {
-      localStorage.setItem('token', res.token);
-      toggleLogin();
-      setEmail(email);
-      history.push("/");
-    }
-  )
-  .catch((res) => {
-       
-    console.log(res);
-  }
-  )}
-function toggleLogin() {
-  loggedIn ? handleTokenOut(false) : setLoggedIn(true);
-};
-function handleTokenOut (){
-  localStorage.removeItem("token");
-  history.push("/sign-in");
-}
    
 
 
@@ -261,7 +221,7 @@ function handleTokenOut (){
 
           <Route path="/sign-in">
           {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />} 
-          <Login onLogin={handleLogin} />
+          <Login />
         </Route>
 
         <Switch>

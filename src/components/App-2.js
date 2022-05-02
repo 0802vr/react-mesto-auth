@@ -14,13 +14,12 @@ import  SuccessAuto from "../image/Success.png"
 import FailAuto from "../image/Fail.png"    
 import { Route, Redirect, Switch, useHistory, BrowserRouter} from "react-router-dom";
 import api from "../utils/Api";
-import Auto from "../utils/Auto.js";
+import * as auto from "../utils/Auto.js";
 import { CurrentUserContext } from "../context/CurrentUserContext";
 
 
 function App() {
-  const history = useHistory();
-  const [loggedIn, setLoggedIn] = React.useState(false);
+
   const [isEditAvatarisPopupOpen, setEditAvatarisPopupOpen] =
     React.useState(false);
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] =
@@ -32,35 +31,14 @@ function App() {
     link: "",
   });
   const [currentUser, setCurrentUser] = React.useState({});
-   
-  const toolTipFail = {image: FailAuto, text:"Что-то пошло не так! Попробуйте ещё раз."};
-const toolTipSuccess = {image: SuccessAuto, text:"Вы успешно зарегистрировались!"};
+const history = useHistory();
+const [loggedIn, setLoggedIn] = React.useState(false);
 const [toolTip, setToolTip] = React.useState(toolTipFail);
 const [email, setEmail] = React.useState("");
 const [isSetTooltipOpen, setTooltipOpen] = React.useState(false);
-
-function handleToken ()  {
-if (localStorage.getItem('jwt')){
-  const jwt = localStorage.getItem('jwt')
-  console.log(jwt)
-  Auto.checkToken(jwt)
-  .then((token) => {
-    if(token.data._id && token.data.email){
-      setEmail(token.data.email);
-      setLoggedIn(true);
-    }
-  })
-  .catch((error) => {
-     
-    console.log(error);
-    }
-  );
-}
-}
-handleToken()
  
- 
- 
+const toolTipFail = {image: FailAuto, text:"Что-то пошло не так! Попробуйте ещё раз."};
+const toolTipSuccess = {image: SuccessAuto, text:"Вы успешно зарегистрировались!"};
 
 
   const handleEditAvatarClick = () => {
@@ -83,7 +61,7 @@ handleToken()
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setSelectedCard({ link: "", name: "" });
-     
+    setTooltipOpen(false)
   };
 
   React.useEffect(() => {
@@ -174,117 +152,141 @@ handleToken()
         console.log(err); // тут ловим ошибку
       });
   }
-  function handleRegister ({email, password}){
-    Auto.register({email:email, password:password})
-    .then (
-     () => {
-       setToolTip(toolTipSuccess);
-       setTooltipOpen(true);
-     }
-   )
-   .catch(() => {
-     setToolTip(toolTipFail);
-     setTooltipOpen(true);
-    
-   })
- }
-
- function handleLogin ({email, password}){
-  Auto.authorize({email:email, password:password})
-  .then (
-    (res) => {
-      localStorage.setItem('token', res.token);
-      toggleLogin();
-      setEmail(email);
-      history.push("/");
-    }
-  )
-  .catch((res) => {
-       
-    console.log(res);
-  }
-  )}
-function toggleLogin() {
+   
+ function toggleLogin() {
   loggedIn ? handleTokenOut(false) : setLoggedIn(true);
 };
-function handleTokenOut (){
-  localStorage.removeItem("token");
-  history.push("/sign-in");
+
+  React.useEffect(() => {
+  const token = localStorage.getItem('token');
+  auto.checkToken(token)
+  .then(
+    (res) => {
+      if(res.data._id && res.data.email) {
+        setEmail(res.data.email);
+        setLoggedIn(true);
+      }
+    }
+  )
+  .catch((error) => {
+     
+      console.log(error);
+    })
+});  
+
+
+  function handleTokenOut (){
+    localStorage.removeItem("token");
+    history.push("/sign-in");
+  }
+
+ function handleLogin ({email, password}){
+auto.authorize({email:email, password:password})
+.then (
+  (res) => {
+    localStorage.setItem('token', res.token);
+    toggleLogin();
+    setEmail(email);
+    history.push("/");
+  }
+)
+.catch((error) => {
+     
+  console.log(error);
 }
-   
+)}
+
+ function handleRegister ({email, password}){
+   auto.register({email:email, password:password})
+   .then (
+    () => {
+      setToolTip(toolTipSuccess);
+      isSetTooltipOpen(true);
+    }
+  )
+  .catch(() => {
+    setToolTip(toolTipFail);
+    isSetTooltipOpen(true);
+  })
+}
 
 
-   
-
- 
-
-  
-
-
-  return(
+  return (
     <BrowserRouter>
-    <body className="page">
-    <CurrentUserContext.Provider value={currentUser}>
+    <div className="page">
+    <CurrentUserContext.Provider value={{currentUser: currentUser,
+       loggedIn: loggedIn,
+       handleLogin: toggleLogin}}>
       
-        <Header />
- 
-
-        <EditProfilePopup
+      <ProtectedRoute 
+            exact path='/' component={Header} />
+    
+       
+       
+        <ProtectedRoute 
+            exact path='/' component={EditProfilePopup}
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
         />
 
-        <AddPlacePopup
+        <ProtectedRoute 
+            exact path='/' component={AddPlacePopup}
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
           onUpdateCard={handleUpdateCard}
         />
 
-        <EditAvatarPopup
+          <ProtectedRoute 
+            exact path='/' component={EditAvatarPopup}
           isOpen={isEditAvatarisPopupOpen}
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
         />
 
-        <ImagePopup
+          <ProtectedRoute 
+            exact path='/' component={ImagePopup}
           name={selectedCard.name}
           link={selectedCard.link}
           onClose={closeAllPopups}
         />
+
+        <ProtectedRoute 
+        exact path="/" component={Main}
+        onEditAvatar={handleEditAvatarClick}
+        onEditProfile={handleEditProfileClick}
+        onAddPlace={handleAddPlaceClick}
+        onCardClick={handleCardClick}
+        onCardLike={handleCardLike}
+        onCardDelete={handleCardDelete}
+        cards={cards}/>
+         
+         <ProtectedRoute 
+            exact path='/' component={Footer} />
         
-        <Route path="/sign-up">
+          
+        <Switch> 
+        <Route  path="/sign-up"> 
         {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-up" />} 
-          <Register onRegister={handleRegister}
-          />
+         <Register onRegister={handleRegister} />
+         <InfoTooltip isOpen={isSetTooltipOpen} data={toolTip} onClose={closeAllPopups}/>
         </Route>
 
-          <Route path="/sign-in">
-          {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />} 
-          <Login onLogin={handleLogin} />
+        <Route  path="/sign-in">   
+        {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+         <Login onLogin={handleLogin} />
+         <InfoTooltip isOpen={isSetTooltipOpen} data={toolTip} onClose={closeAllPopups}/>
         </Route>
 
-        <Switch>
-       
-          <ProtectedRoute
-            exact path="/" 
-            loggedIn={loggedIn}
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onCardClick={handleCardClick}
-            cards={cards}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
-            component={Main} 
-          >
-            <Main></Main>
-            <Footer />
-          </ProtectedRoute>
-        </Switch>
+        
+        <Route exact path="/">
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-up" />}
+          </Route>
+        
+      </Switch>
       
     </CurrentUserContext.Provider>
-    </body>
+    </div>
     </BrowserRouter>
   );
 }

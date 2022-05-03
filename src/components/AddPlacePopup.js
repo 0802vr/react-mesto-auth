@@ -4,28 +4,28 @@ import PopupWithForm from "./PopupWithForm";
 
 function AddPlacePopup(props) {
   const { isOpen, onClose, onUpdateCard } = props;
-  const [name, setName] = React.useState("");
-  const [link, setLink] = React.useState("");
-   
+  const name = React.useRef();
+  const link = React.useRef();
 
-  function nameChange(e) {
-    setName(e.target.value);
-  }
-  function linkChange(e) {
-    setLink(e.target.value);
-  }
+  React.useEffect(() => {
+    name.current.value = "";
+    link.current.value = "";
+     
+  }, [isOpen]);
+  
+
+   
   function handleSubmit(e) {
     // Запрещаем браузеру переходить по адресу формы
     e.preventDefault();
 
     onUpdateCard({
-      name,
-      link
+      name: name.current.value,
+      link: link.current.value
     });
-    setName("");
-    setLink("");
+    
   }
-
+  
    
     return(
     <PopupWithForm
@@ -45,8 +45,8 @@ function AddPlacePopup(props) {
           maxLength="30"
           minLength="2"
           placeholder="Место"
-          onChange={nameChange}
-          value={name}
+           
+          ref={name}
           required
         />
         <span className="popup__error" id="card-input-error"></span>
@@ -56,8 +56,8 @@ function AddPlacePopup(props) {
           name="inputFormAddition"
           type="url"
           placeholder="Ссылка"
-          onChange={linkChange}
-          value={link}
+          
+          ref={link}
           required
         />
         <span className="popup__error" id="link-input-error"></span>

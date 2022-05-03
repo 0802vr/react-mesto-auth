@@ -1,7 +1,7 @@
 import React from "react";
-import { renderIntoDocument } from "react-dom/test-utils";
+ 
 import {Link, useLocation } from "react-router-dom";
-function Header({email, button, text, link, logOut}) {
+function Header({email, logOut}) {
 function handleClick () {
     logOut()
 }

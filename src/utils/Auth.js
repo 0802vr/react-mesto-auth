@@ -1,5 +1,5 @@
  
-class Auto {
+class Auth {
   constructor({server,handleResponse}) {
     this._server = server;
     this._handleResponse = handleResponse;}
@@ -26,14 +26,7 @@ authorize  ({email, password}) {
     },
     body: JSON.stringify({"email": email, "password": password})
   })
-  .then((response => response.json()))
-  .then((data) => {
-    if (data){
-      localStorage.setItem('jwt', data.token);
-      
-      return data;
-    } 
-  })
+  
   .then(this._handleResponse)
 };
 checkToken  (token) {
@@ -48,7 +41,7 @@ checkToken  (token) {
   .then(this._handleResponse)
 }
 }
-export default new Auto({server: "https://auth.nomoreparties.co", handleResponse: (res) => {
+export default new Auth({server: "https://auth.nomoreparties.co", handleResponse: (res) => {
   if (!res.ok) {return Promise.reject(`Ошибка: ${res.status}`);}
   return res.json();
 }});

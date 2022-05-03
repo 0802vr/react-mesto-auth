@@ -3,7 +3,12 @@ import PopupWithForm from "./PopupWithForm";
 function EditAvatarPopup(props) {
   const { isOpen, onClose, onUpdateAvatar } = props;
   const refAvatar = React.useRef();
-  
+
+  React.useEffect(() => {
+    refAvatar.current.value = "";
+    
+     
+  }, [isOpen]);
    
 
   function handleSubmit(e) {
@@ -12,7 +17,7 @@ function EditAvatarPopup(props) {
     onUpdateAvatar({
       avatar: refAvatar.current.value,
     });
-    refAvatar.current.value = "";
+    
   }
 
   return (

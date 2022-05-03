@@ -1,12 +1,14 @@
 import React from 'react';
 function InfoTooltip({name, isOpen, data, onClose}) {
-    <section className={`popup popup_${name} ${isOpen && 'popup_opened'}`}>
+    return (
+    <section className={`popup ${isOpen && 'popup_opened'}`}>
+        <div className="popup__overlay" onClick={() => onClose()} ></div>
         <div className="popup__container">
-        <div className="popup__icon" style={{backgroundImage: `url(${data.image})`}}>
-            <span className="popup__text">{data.text}</span>
+            <div className="popup__icon" style={{backgroundImage: `url(${data.image})`}}></div>  
+            <span className="popup__message">{data.text}</span>
             <button type="button" className="popup__close-container" onClick={onClose}></button>
-            </div>  
+            
         </div>
-    </section>
+    </section>)
 }
 export default InfoTooltip;

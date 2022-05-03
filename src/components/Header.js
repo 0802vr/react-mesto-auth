@@ -1,8 +1,31 @@
 import React from "react";
+import { renderIntoDocument } from "react-dom/test-utils";
+import {Link, useLocation } from "react-router-dom";
+function Header({email, button, text, link, logOut}) {
+function handleClick () {
+    logOut()
+}
+ 
+    const location = useLocation();
 
-function Header() {
     return (<header className="header">
                 <div className="header__logo"></div>
+                <div className="header__NavBar">
+                {location.pathname === "/sign-up" && 
+         <p className="header__email"></p>}
+                {location.pathname === "/sign-in" && 
+         <p className="header__email"></p>}
+                {location.pathname === "/" && 
+         <p className="header__email">{email}</p>}
+         {location.pathname === "/sign-up" && 
+         <Link to="/sign-in" className="header__button">Войти</Link>}
+         {location.pathname === "/sign-in" && 
+         <Link to="/sign-up" className="header__button">Регистрация</Link>}
+         {location.pathname === "/" && 
+         <p to="/sign-in" className="header__button" onClick={handleClick} >Выйти</p>}
+         
+        
+                </div>
             </header>)
 }
 

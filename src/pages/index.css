@@ -55,7 +55,11 @@
 @import url(../blocks/login/__span/login__span.css);
 @import url(../blocks/login/__span/_link/login__span_link.css);
 @import url(../blocks/login/button/login__button.css);
-
+@import url(../blocks/header/__NavBar/header__NavBar.css);
+@import url(../blocks/header/__email/header__email.css);
+@import url(../blocks/header/__button/header__button.css);
+@import url(../blocks/popup/__icon/popup__icon.css);
+@import url(../blocks/popup/__massage/popup__message.css);
 
 
 

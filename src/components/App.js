@@ -42,7 +42,7 @@ const [isSetTooltipOpen, setTooltipOpen] = React.useState(false);
 function handleToken ()  {
 if (localStorage.getItem('jwt')){
   const jwt = localStorage.getItem('jwt')
-  console.log(jwt)
+   
   Auto.checkToken(jwt)
   .then((token) => {
     if(token.data._id && token.data.email){
@@ -83,6 +83,7 @@ handleToken()
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setSelectedCard({ link: "", name: "" });
+    setTooltipOpen(false)
      
   };
 
@@ -180,6 +181,7 @@ handleToken()
      () => {
        setToolTip(toolTipSuccess);
        setTooltipOpen(true);
+       history.push("/sign-in");
      }
    )
    .catch(() => {
@@ -188,45 +190,50 @@ handleToken()
     
    })
  }
-
+  
  function handleLogin ({email, password}){
   Auto.authorize({email:email, password:password})
   .then (
     (res) => {
-      localStorage.setItem('token', res.token);
+      
       toggleLogin();
       setEmail(email);
+      localStorage.setItem('jwt', res.token);
       history.push("/");
+      
+      
+      
+      
     }
   )
   .catch((res) => {
        
-    console.log(res);
+    console.log(res.message);
   }
   )}
 function toggleLogin() {
   loggedIn ? handleTokenOut(false) : setLoggedIn(true);
 };
 function handleTokenOut (){
-  localStorage.removeItem("token");
+  localStorage.removeItem('jwt');
   history.push("/sign-in");
+  setLoggedIn(false);
 }
    
-
-
-   
-
- 
-
-  
-
 
   return(
     <BrowserRouter>
     <body className="page">
     <CurrentUserContext.Provider value={currentUser}>
       
-        <Header />
+        <Header  
+        email={email}
+        logOut={handleTokenOut}
+        button="Выйти"
+        text=""
+        link=""
+
+        />
  
 
         <EditProfilePopup
@@ -254,14 +261,18 @@ function handleTokenOut (){
         />
         
         <Route path="/sign-up">
-        {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-up" />} 
+        {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-up" />}
+         
           <Register onRegister={handleRegister}
           />
+          <InfoTooltip isOpen={isSetTooltipOpen} data={toolTip} onClose={closeAllPopups}/>
         </Route>
 
           <Route path="/sign-in">
-          {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />} 
+          {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+           
           <Login onLogin={handleLogin} />
+          <InfoTooltip isOpen={isSetTooltipOpen} data={toolTip} onClose={closeAllPopups}/>
         </Route>
 
         <Switch>

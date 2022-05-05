@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "./Header";
 import Main from "./Main";
-import Footer from "./Footer";
+ 
 import ImagePopup from "./ImagePopup";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
@@ -51,7 +51,9 @@ function App() {
   const [email, setEmail] = React.useState("");
   const [isSetTooltipOpen, setTooltipOpen] = React.useState(false);
 
-  function handleToken() {
+ 
+  
+  React.useEffect(() => {
     if (localStorage.getItem("jwt")) {
       const jwt = localStorage.getItem("jwt");
 
@@ -66,8 +68,9 @@ function App() {
           console.log(error);
         });
     }
-  }
-  handleToken();
+  
+  }, []);
+  
 
   const handleEditAvatarClick = () => {
     setEditAvatarisPopupOpen(true);
@@ -122,7 +125,7 @@ function App() {
     getUserInfo();
     getCard();
   }
-  }, []);
+  }, [loggedIn]);
 
 
   function handleCardLike(card) {
@@ -287,8 +290,7 @@ function App() {
               onCardDelete={handleCardDelete}
               component={Main}
             >
-              <Main></Main>
-              <Footer />
+               
               
             </ProtectedRoute>
           </Switch>

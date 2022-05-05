@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "./Card"
+import Footer from "./Footer";
 import {CurrentUserContext} from "../context/CurrentUserContext";
 function Main(props) {
 
@@ -8,6 +9,7 @@ function Main(props) {
     
 
     return (
+        
         <main className="content">
             <section className="profile">
                 <div className="profile__main-info">
@@ -31,7 +33,9 @@ function Main(props) {
                     <Card key={card._id} card={card} onCardClick={props.onCardClick} onCardLike ={props.onCardLike} onCardDelete ={props.onCardDelete}/>
                 ))}
             </ul>
+            <Footer />
         </main>
+       
     )
 }
 

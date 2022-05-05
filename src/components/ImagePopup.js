@@ -7,7 +7,7 @@ function ImagePopup (props){
           <div className="popup__overlay" onClick={() => props.onClose()}></div>
           <div className="popup__slider">
              <button type="button" className="popup__close-container" onClick={() => props.onClose()}></button>
-             <img className="popup__img" src={props.link} alt=""/>
+             <img className="popup__img" src={props.link} alt={props.name}/>
              <p className="popup__text">{props.name}</p>
           </div>
        </div>
